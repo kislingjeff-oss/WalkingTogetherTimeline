@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walking Together Timeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday, for young Friends: warm, clear, unhurried
+   IDEA a trail guide: the 94-mile route as a walking line with town stations, one day at a time
+   PICTURE the route line, drawn to true mileage, with the walker's position on the chosen day; Jeff's photos below
+   COLOUR light sky blue ground, deep blue ink, prairie gold accent for the walked path
+   TYPE IBM Plex Sans throughout
+   LAYOUT title + route across the top; day panel: photos left, story right; stacks below 900px */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#0b1a2e);--sky:light-dark(#d9eefc,#12304f);--sky2:light-dark(#eef7fe,#0f2640);
+--ink:light-dark(#0b2545,#e8f2fc);--soft:light-dark(#33506f,#a9c4de);--blue:light-dark(#1565c0,#6db3f2);
+--deep:light-dark(#0b2545,#06111f);--gold:light-dark(#d98a00,#f2b544);--line:light-dark(#b7d6f2,#24496f)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 "IBM Plex Sans",system-ui,sans-serif;overflow-x:clip}
+img{max-width:100%;display:block}
+.band{padding:clamp(24px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+header.band{background:var(--sky);padding-bottom:12px}
+h1{font-size:clamp(34px,5vw,52px);line-height:1.05;letter-spacing:-.02em;margin:0 0 8px;text-wrap:balance}
+.sub{font-size:19px;color:var(--soft);margin:0}
+h2{font-size:clamp(26px,3vw,34px);line-height:1.1;letter-spacing:-.01em;margin:0 0 14px}
+h3{font-size:19px;margin:22px 0 6px;color:var(--blue)}
+.top{z-index:5;box-shadow:0 1px 0 var(--line)}
+@media(min-width:600px){.top{position:sticky;top:0}}
+html{scroll-padding-top:var(--stick,0px)}
+.route{background:var(--sky);padding:0 max(5vw,16px) 8px}
+.fig{position:relative;height:132px;max-width:1240px;margin:0 auto}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+svg text{font:600 13px "IBM Plex Sans",sans-serif;fill:var(--ink);paint-order:stroke;stroke:var(--sky);stroke-width:4px}
+svg .stn{cursor:pointer}
+.days{background:var(--sky);padding:6px max(5vw,16px) 18px}
+.days .wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.days button{font:600 15px "IBM Plex Sans",sans-serif;min-height:44px;min-width:52px;padding:0 14px;border-radius:22px;border:2px solid var(--blue);background:var(--bg);color:var(--ink);cursor:pointer}
+.days button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:#fff}
+.days button:focus-visible,.nav button:focus-visible,.word:focus-visible,.thumbs button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.panel{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);align-items:start}
+.dayhead{display:flex;gap:14px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.tag{background:var(--deep);color:#fff;font-weight:700;padding:8px 14px;border-radius:6px;white-space:nowrap}
+.dayhead .when{font-weight:700;font-size:20px;line-height:1.2}
+.dayhead .where{color:var(--soft)}
+.miles{color:var(--gold);font-weight:700;white-space:nowrap}
+.viewer{position:sticky;top:calc(var(--stick,0px) + 12px)}
+.big{aspect-ratio:3/2;width:100%;object-fit:cover;border-radius:8px;background:var(--sky2);cursor:zoom-in}
+.cap{font-size:15px;color:var(--soft);margin:8px 0 10px;min-height:2.6em}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumbs button{padding:0;border:3px solid transparent;border-radius:6px;background:none;cursor:pointer;width:84px}
+.thumbs button[aria-current=true]{border-color:var(--gold)}
+.thumbs img{aspect-ratio:3/2;object-fit:cover;border-radius:3px;width:100%}
+.story p{margin:0 0 14px;max-width:68ch}
+.wonder{background:var(--sky2);border-left:6px solid var(--blue);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:18px}
+.wonder b{color:var(--blue)}
+.wonder label{display:block;font-size:14px;color:var(--soft);margin:10px 0 4px}
+textarea{width:100%;min-height:88px;font:16px/1.5 "IBM Plex Sans",sans-serif;padding:10px;border:2px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);resize:vertical}
+textarea:focus{outline:3px solid var(--gold);border-color:var(--blue)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+.nav button{font:600 15px "IBM Plex Sans",sans-serif;min-height:44px;padding:0 18px;border-radius:6px;border:2px solid var(--blue);background:var(--bg);color:var(--blue);cursor:pointer}
+.nav button:disabled{opacity:.35;cursor:default}
+.meter{margin-top:6px;font-size:15px;color:var(--soft)}
+.meter .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:4px}
+.meter .bar i{display:block;height:100%;background:var(--gold);transition:width .5s}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,4vw,56px)}
+.alt{background:var(--sky2)}
+.sched{list-style:none;padding:0;margin:0}
+.sched li{display:grid;grid-template-columns:8.5em minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.sched b{white-space:nowrap;color:var(--blue)}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.word{text-align:left;font:16px/1.45 "IBM Plex Sans",sans-serif;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:14px;min-height:96px;cursor:pointer}
+.word strong{display:block;font-size:18px;color:var(--deep)}
+:root[data-theme=dark] .word strong{color:var(--blue)}
+.word span{display:block;color:var(--soft);margin-top:6px}
+.word[aria-expanded=false] span{display:none}
+.word[aria-expanded=false]::after{content:"Tap to see what it means";display:block;color:var(--soft);font-size:14px;margin-top:6px}
+.queries{padding-left:1.2em;margin:0}
+.queries li{margin-bottom:10px;max-width:70ch}
+footer{background:var(--deep);color:#e8f2fc}
+footer a{color:#9fd0ff}
+.lb{position:fixed;inset:0;background:rgba(5,15,30,.92);display:none;align-items:center;justify-content:center;padding:16px;z-index:9;flex-direction:column;gap:10px}
+.lb.on{display:flex}
+.lb img{max-height:82vh;width:auto;border-radius:6px}
+.lb p{color:#fff;margin:0;max-width:70ch;text-align:center}
+.lb button{font:600 15px "IBM Plex Sans",sans-serif;min-height:44px;padding:0 18px;border-radius:6px;border:2px solid #fff;background:none;color:#fff;cursor:pointer}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .word strong{color:var(--blue)}}
+@media(max-width:900px){.panel{grid-template-columns:minmax(0,1fr)}.viewer{position:static}}
+@media(max-width:600px){.two{grid-template-columns:minmax(0,1fr)}.sched li{grid-template-columns:minmax(0,1fr);gap:0}.fig{height:170px}.thumbs button{width:70px}}
+@media(prefers-reduced-motion:reduce){.meter .bar i{transition:none}}
+</style>
+</head>
+<body>
+<header class="band"><div class="wrap">
+<h1>Walking Together</h1>
+<p class="sub">An illustrated timeline of the First Nation–Farmer Climate Unity March: 94 miles from Des Moines to Fort Dodge, Iowa, September 1–8, 2018. Written for young Friends by Jeff Kisling, with his own photographs.</p>
+</div></header>
+<div class="top" id="top"><div class="route" aria-label="Route map"><div class="fig"><svg id="map" role="img" aria-label="The route from Des Moines to Fort Dodge, drawn to scale by miles"></svg></div></div>
+<nav class="days" aria-label="Choose a day"><div class="wrap" id="daybtns"></div></nav></div>
+
+<main>
+<section class="band" id="day"><div class="wrap panel">
+<div class="viewer">
+<img class="big" id="big" alt="">
+<p class="cap" id="cap"></p>
+<div class="thumbs" id="thumbs"></div>
+</div>
+<div class="story">
+<div class="dayhead"><span class="tag" id="tag"></span><div><div class="when" id="when"></div><div class="where" id="where"></div></div></div>
+<div class="meter" id="meter"></div>
+<div id="text" style="margin-top:14px"></div>
+<div class="wonder"><b>Wonder about it: </b><i id="q"></i>
+<label for="note">Your thoughts (kept only in this browser)</label>
+<textarea id="note" placeholder="Write a few words, or just sit with the question."></textarea></div>
+<div class="nav"><button id="prev">← Earlier</button><button id="next">Later →</button></div>
+</div>
+</div></section>
+
+<section class="band alt"><div class="wrap two">
+<div>
+<h2>Before you begin</h2>
+<p>In September 2018, about thirty people walked 94 miles across the middle of Iowa. Nearly a dozen were Native Americans. Others were farmers, Quakers, students, artists, and people who simply cared about land and water. Most were strangers to each other when they started.</p>
+<p>They walked along the route of the Dakota Access Pipeline, which carries crude oil from North Dakota across Iowa. Many Iowa farmers did not want it on their land, but the state let the company use eminent domain to build it anyway. Native nations, especially at Standing Rock, had objected that it put their water and sacred places at risk.</p>
+<p>But the March was not mainly about the pipeline. As Manape LaMere explained, the purpose was to make it possible for us to <b>work together in the future</b>. To work together we needed to trust each other, and to trust each other we needed to understand each other.</p>
+</div>
+<div>
+<h2>Why would a Quaker walk 94 miles?</h2>
+<p>I grew up on farms near Bear Creek Meeting, just north of Earlham, Iowa. Every farmer is closely connected to the land. As a Friend, I believe there is that of God in everyone, and that if we wait in silence we can hear what the Spirit is asking of us. Then we try to do it.</p>
+<p>In Indianapolis I had worked alongside Native people supporting the water protectors at Standing Rock, and praying together I felt a deep spiritual connection. At Iowa Yearly Meeting (Conservative) in 2017, the theme was Building Bridges, and I met Donnielle Wanatee and Christine Nobiss there. When the March was announced, it felt like a clear leading. I walked it at sixty-seven.</p>
+</div>
+</div></section>
+
+<section class="band"><div class="wrap two">
+<div>
+<h2>A day on the March</h2>
+<ul class="sched">
+<li><b>5:30 a.m.</b><span>The kitchen team makes breakfast and sets out food for packing lunches.</span></li>
+<li><b>6:00 a.m.</b><span>Everyone wakes, eats, washes dishes, takes down tents, loads the gear truck.</span></li>
+<li><b>7:40 a.m.</b><span>Morning circle: the day’s route, a reading, a prayer, or smudging with sage.</span></li>
+<li><b>8:00–3:00</b><span>Walking, facing traffic, in bright vests. A break about every hour, lunch together.</span></li>
+<li><b>Afternoon</b><span>Set up camp, charge phones from the solar panels, help with chores.</span></li>
+<li><b>5:30 p.m.</b><span>Dinner together.</span></li>
+<li><b>6:30 p.m.</b><span>Community forum with people from the area, open to anyone.</span></li>
+<li><b>9:00 p.m.</b><span>Quiet time.</span></li>
+</ul>
+</div>
+<div>
+<h2>Who took care of us</h2>
+<p>A rented gear truck carried tents and bags to each campsite and set up a solar generator. The sag wagon picked up anyone too tired or hurt to walk. A trailer carried two compost toilets and two solar showers. Volunteers cooked every meal.</p>
+<p>Native leaders Manape LaMere, Alton Onefeather, and Lakasha Yooxot Likipt watched over our safety, driving ahead to look for traffic and storms and talking with anyone unfriendly. Manape called our walk a “sacred journey.” Everyone agreed to a code of nonviolence before we began.</p>
+</div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+<h2>Words to know</h2>
+<div class="words" id="words"></div>
+</div></section>
+
+<section class="band"><div class="wrap two">
+<div>
+<h2>Queries for young Friends</h2>
+<p>For worship sharing, First Day School, or on your own. Let silence do some of the work.</p>
+<ul class="queries">
+<li>Whose land do you live on? Do you know the names of the Native nations who lived there first, and who may still live there now?</li>
+<li>Where does your water come from? What would it mean to you to say, “Water is life”?</li>
+<li>The marchers came to trust each other by walking, eating, and telling stories together. Who outside your usual circle could you get to know this way?</li>
+<li>When people disagree strongly, how can we stand up for what we believe while still answering that of God in everyone?</li>
+<li>What could you share from your faith, and what would you like to learn from someone else’s?</li>
+<li>Is there a leading growing in you, something you feel drawn to do even if it is hard?</li>
+</ul>
+</div>
+<div>
+<h2>What the March taught us</h2>
+<p>The March was never only about the pipeline. Its purpose was to build relationships so that Native people and farmers could work together on the things we all care about. That worked extremely well. In the years since, different combinations of the people who walked together have worked on many projects side by side.</p>
+<p>Peter Clay, who represented Quaker Earthcare Witness on the March, wrote that the deepest lesson was about broken relationships, and how much healing will be required of all of us. He believed the March was part of the way forward, but that it is a long journey.</p>
+<p>The knowledge I most needed, about how Native peoples have cared for this land and water, could only reach me through relationship. I had the reading and I had the hands-on work, and still that knowledge needed a relationship to travel through. Friendship opened the door.</p>
+</div>
+</div></section>
+</main>
+
+<footer class="band"><div class="wrap">
+<p style="margin:0 0 8px">The full story, with daily posts, videos and more photos: <a href="https://firstnationfarmer.com/">firstnationfarmer.com</a></p>
+<p style="margin:0;font-size:15px;opacity:.85">All photographs by Jeff Kisling, taken during the March and the court hearing that followed, September 1–12, 2018.</p>
+</div></footer>
+
+<div class="lb" id="lb" role="dialog" aria-label="Photo"><img id="lbimg" alt=""><p id="lbcap"></p><button id="lbx">Close</button></div>
+
+<script>
+{
+const stations=[["Des Moines",0],["Ankeny",13.2],["Huxley",22.2],["Ames",32.2],["Boone",47.2],["Pilot Mound",61.2],["Dayton",70.2],["Otho",81.9],["Fort Dodge",94.3]];
+const days=[
+{id:"eve",tag:"Eve",when:"Friday, August 31, 2018",where:"Union Park, Des Moines",miles:"",at:0,
+photos:[["DSC_8380","Marchers set out along the river trail on the first morning."]],
+text:["My mother drove me to Union Park and helped me put up my brand-new tent, though we put it in the wrong place and had to carry it to a new spot. Miriam Kashia, whom I knew from a 2013 climate walk, gave me bright strips to tie onto my tent lines so no one would trip over them. Almost everyone else was a stranger.","We shared our first meal in the park shelter and learned how the March would work. Around 3:00 a.m. thunder, lightning, and heavy rain woke me up. To my happy surprise, my tent stayed dry. At 6:00 the next morning I took down my tent for the first time, in wind and rain. It was clear this was going to be an interesting week!"],
+q:"What does it feel like to arrive somewhere new where almost everyone is a stranger? What helps you begin to feel at home?"},
+{id:"day-1",tag:"Day 1",when:"Saturday, September 1",where:"Des Moines → Ankeny",miles:"13.2 miles",at:1,
+photos:[["DSC_8319","Morning press conference at the Iowa Utilities Board, the state agency that approved the pipeline."],["DSC_8360","Setting out together from Birdland Park."],["DSC_8399","Walking past a Casey’s on the way into Ankeny."],["DSC_8421","Late afternoon, getting close to camp in Ankeny."]],
+text:["We began with a press conference at the Iowa Utilities Board, where Regina Tsosie sang. Then at Birdland Park on the Des Moines River we stood in a circle. Ed Fallon spoke about beginning the March, Ako Abdul-Samad offered a blessing, and Manape LaMere sang. The Native dress, the singing, and the blessing were among my first real introductions to Native American culture.","The river trails were swollen from the rain. After a couple of hours the sun came out and it got hot. People paired off and began getting to know each other, starting with short, shy conversations. That night we camped at the Griffieon family farm and held our first community forum."],
+q:"Manape said we needed to understand each other before we could trust each other. What is one thing you would want a new friend to understand about you?"},
+{id:"day-2",tag:"Day 2",when:"Sunday, September 2",where:"Ankeny → Huxley",miles:"9 miles",at:2,
+photos:[["DSC_8440","Morning at the Griffieon farm: tipi poles stand in the field after the night’s storm."],["DSC_8495","Dark clouds threatened all day, but the rain held off."],["DSC_8511","Many marchers also worked in media and stopped often to take photos and video."]],
+text:["Another storm in the night kept most of us awake for two or three hours. Some people moved into the farm’s machine shed, and one marcher found their tent in a nearby field the next morning! Lyssa made French toast with strawberries and blueberries.","Creeks were flooding over their banks. Sam, our sag wagon driver, found our Huxley campsite under water. He called Fjeldberg Lutheran Church, and the people there offered us sanctuary. That evening my Scattergood classmate Lee Tesdell gave a talk about farming in ways that care for the soil and water."],
+q:"The church people opened their doors to strangers in a storm. When have you been welcomed, or welcomed someone else, when it was not expected?"},
+{id:"day-3",tag:"Day 3",when:"Monday, September 3",where:"Huxley → Ames",miles:"10 miles",at:3,
+photos:[["DSC_8526","Setting out from the church in Huxley in heavy rain."],["DSC_8579","Marchers and their signs at a stop along the way."],["DSC_8563","A big green hornworm caterpillar on the gravel shoulder."],["DSC_8614","Walking into Ames, signs and dogs and all."]],
+text:["Before we left, Trisha led a smudging, offering the smoke of burning sage. Heavy rain fell for the first several hours, and no one suggested waiting it out. We put on rain gear, held our morning circle, and set off telling stories.","Lee showed me where the pipeline crossed our road. We stopped and Donnielle Wanatee prayed for the walkers’ safety and our families at home. It was very emotional. Kathy Byrnes remembered when the pipeline was built across a neighbor’s land, and others hugged her. Many Native marchers call the pipeline “the black snake.” Every crossing after this one was just as moving. That night the tipi went up again in Ames."],
+q:"Why do you think people felt so much at the places where the pipeline crossed? Is there a place you care about so much that harm to it would hurt you too?"},
+{id:"day-4",tag:"Day 4",when:"Tuesday, September 4",where:"Ames → Boone",miles:"15 miles, the longest day",at:4,
+photos:[["DSC_8597","The shower trailer traveled with us. Two solar showers made a big difference."],["DSC_8673","“Earth Is My Church”: marchers carry their signs toward Boone."],["DSC_8714","A driver stops to talk, and a marcher’s dog comes over to say hello."],["DSC_8733","Waiting at a railroad crossing near the end of the longest day."]],
+text:["Fifteen miles is a long way to walk, especially with flash flood warnings. We crossed the pipeline again and Donnielle prayed for us. We reached the Boone County Fairgrounds around 5:30, tired and limping. I had worn a hole in my shoe and had a blister, which Miriam patched up.","That night all of us slept in the same room for the first time. Donnielle said we were becoming a tribe. We ate buffalo meat and fry bread, and Manape joked that our dinner should be called “Thanks-taking.” Alton Onefeather talked about a childhood horse that always came when he called; Matthew Lone Bear and I talked about photography and drones."],
+q:"Donnielle said we were becoming a tribe. What turns a group of people into a community?"},
+{id:"day-5",tag:"Day 5",when:"Wednesday, September 5",where:"Boone → Pilot Mound",miles:"14 miles",at:5,
+photos:[["DSC_8763","Sharing sage at the start of a rainy day."],["DSC_8779","A sheriff’s deputy stops by. Manape spoke with him, and there was no trouble."],["DSC_8861","Long lines of birds crossed the gray sky that afternoon."],["DSC_8800","A lone tree beside a pond on the way to Pilot Mound."],["DSC_8911","Arriving in Pilot Mound at the end of the day."]],
+text:["The rain was even heavier, but no one complained. Miriam fixed my blister with foam and duct tape. Alton made a little raincoat for his dog, Oceti. When cars came, we called “car up” or “car back” and moved into single file.","At the pipeline before the river near Pilot Mound, I was asked to lead the prayers. I explained a little about Quaker worship, and then we held hands in a circle and worshiped in silence. Afterward several people hugged me. Manape told me that sharing about our faiths was exactly what builds the understanding we would need for trust.","Manape’s father, Frank, a longtime activist, said we made his heart soar, and that it matters less how many stand up for the truth than that they keep at it. Pilot Mound had no cell service. As I walked, I found myself talking to the trees, the squirrels, and the birds."],
+q:"When we held hands and sat in silence, people of many faiths worshiped together. What might silence make possible that words cannot?"},
+{id:"day-6",tag:"Day 6",when:"Thursday, September 6",where:"Pilot Mound → Dayton",miles:"9 miles",at:6,
+photos:[["DSC_8982","Soybean fields under a clearing sky."],["DSC_9015","On the gravel roads we could walk side by side and talk."],["DSC_8957","A vest from the 2014 Great March for Climate Action, Los Angeles to Washington, D.C."]],
+text:["Lyssa Wade made another good breakfast. Someone had hung a March T-shirt in a window across the street. Foxy carried a large poster calling attention to missing and murdered Native women, a crisis many people outside Native communities have never heard about. My foot was healing and the miles were getting easier.","We camped at Oak Park in Dayton. The staff at the golf course next door welcomed us, let us use their internet, and offered showers. And for once, we had a night outdoors with no storm!"],
+q:"Why might some stories, like those of missing Native women, go untold? Whose stories do you hear about most, and whose least?"},
+{id:"day-7",tag:"Day 7",when:"Friday, September 7",where:"Dayton → Otho",miles:"11.7 miles",at:7,
+photos:[["DSC_9066","Two marchers on a quiet country road."],["DSC_9102","The last stretch passed a field of wind turbines."],["DSC_9078","Getting down low for the right camera angle."],["DSC_9039","Walking single file along a highway shoulder."]],
+text:["Our reading was from the Ojibwe writer Richard Wagamese, who wrote that we are defined by the stories we create and share, not by the things we own. Ed Fallon played his flute as we walked. A herd of cattle moved toward us all together and stopped all together as we passed.","At the bottom of a very steep hill, someone had written “Mni Wiconi” on the bridge: Lakota for “Water is life.” Manape showed us wild grapes and let us smell them crushed. Around the evening bonfire, Trisha Etringer led a discussion about decolonization, and Manape spoke about sovereignty. In the dark we could hear the whoosh of the turbines."],
+q:"Richard Wagamese wrote that we are made of stories. What story would you want to share with someone very different from you?"},
+{id:"day-8",tag:"Day 8",when:"Saturday, September 8",where:"Otho → Fort Dodge",miles:"12.4 miles",at:8,
+photos:[["20180908_073708","Early morning on the final day, wind turbines in the low sunlight."],["20180908_130907","Arriving in Fort Dodge, beside the trailer with the March mural."],["20180908_133759","The tipi already standing in City Square Park."],["20180908_152524","The gear truck with the mural painted during the week."],["20180908_150733","The mural up close: “#Decolonize” and “No pipelines on stolen land.”"],["20180908_143749","My shoes after 94 miles. The Fort Dodge Messenger printed a photo of my bandaged foot and shoes."]],
+text:["We took down our tents in the cold and dark to reach Fort Dodge by 1:30, and we made it! Before setting out, we gave Alton and Foxy the money we had collected as a wedding gift. Fintan decorated the envelope.","Police escorted us to City Square Park, where a tipi was standing. Drummers sang about the importance of water. The band Brutal Republic played, powered by the solar panels that traveled with us all week. My brother Randy drove me home. I was too tired to stay long, but my heart was full."],
+q:"At the start we were mostly strangers; by the end we were friends. What made the difference: the walking, the meals, the hardships, the stories, or something else?"},
+{id:"after",tag:"After",when:"Wednesday, September 12, 2018",where:"Iowa Judicial Branch Building, Des Moines",miles:"",at:0,
+photos:[["DSC_9288","Landowners, Native people, and supporters gather as the Iowa Supreme Court hears the pipeline case."],["DSC_9273","Speakers at the press conference outside the courthouse."]],
+text:["Four days after we reached Fort Dodge, the Iowa Supreme Court heard a case brought by Iowa landowners and the Sierra Club, who argued the state was wrong to let a private oil company use eminent domain on farmers’ land. Bringing attention to this case had been one of the goals of the March. Many of us came back together on the courthouse steps. In May 2019, the court ruled against the landowners.","We were never walking alone. Friends at Bear Creek Meeting sent encouragement every day, and Liz Oppenheimer organized a worship call each morning at 8:30 while we walked. When someone said holding us in prayer was “such a small thing,” I said, “No, no, it’s not.”"],
+q:"The court ruled against the landowners, but the friendships remained. What does it mean for something to succeed?"}
+];
+const words=[["Dakota Access Pipeline","An underground pipeline, finished in 2017, carrying crude oil from North Dakota through South Dakota and Iowa to Illinois."],["Eminent domain","The power of a government to take private property for public use, with payment."],["Water protectors","The name chosen by Native people and allies who stood up to protect water from the pipeline, especially at Standing Rock."],["Mni Wiconi","Lakota words meaning “Water is life.”"],["The black snake","A name many Native people use for the pipeline."],["Smudging","Burning sacred plants such as sage, and letting the smoke cleanse and bless people and places."],["Tipi","A cone-shaped lodge of poles and a cover, used by many Plains nations. One was set up at several of our camps."],["Sag wagon","A support vehicle that follows a march and picks up anyone who needs a rest."],["Decolonization","Undoing the harms of colonization, including how it shapes our thinking, and restoring Indigenous peoples’ rights, lands, and ways of life."],["Sovereignty","The right of a people to govern themselves."],["Leading","A Quaker word for a sense that the Spirit is calling you to do something."]];
+
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)||""}catch(e){return ""}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let cur=0,pic=0;
+
+$("daybtns").innerHTML=days.map((d,i)=>`<button data-i="${i}" aria-pressed="false">${d.tag}</button>`).join("");
+const toDay=()=>$("day").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+$("daybtns").addEventListener("click",e=>{const b=e.target.closest("button");if(b){go(+b.dataset.i);toDay()}});
+$("words").innerHTML=words.map(([w,d])=>`<button class="word" aria-expanded="false"><strong>${w}</strong><span>${d}</span></button>`).join("");
+$("words").addEventListener("click",e=>{const b=e.target.closest(".word");if(b)b.setAttribute("aria-expanded",b.getAttribute("aria-expanded")==="true"?"false":"true")});
+
+const mapEl=$("map");
+const draw=()=>{
+  const W=mapEl.clientWidth,H=mapEl.clientHeight,m=Math.min(60,W*.08),y=H/2,tot=94.3;
+  const x=mi=>m+(W-2*m)*mi/tot;
+  const d=days[cur];const end=d.id==="after"?94.3:(d.at?stations[d.at][1]:0);const start=d.at>0?stations[d.at-1][1]:0;
+  let path=`M${x(0)},${y}`;for(let i=1;i<=40;i++){const mi=tot*i/40;path+=` L${x(mi).toFixed(1)},${(y+Math.sin(i*.9)*5).toFixed(1)}`}
+  const ys=mi=>y+Math.sin(mi/tot*40*.9)*5;
+  const narrow=W<560;
+  const st=stations.map(([n,mi],i)=>{const up=i%2===0,lab=narrow&&n==="Pilot Mound"?"Pilot M.":(narrow&&n==="Des Moines"?"Des Moines":n);
+    const on=(i>0&&i===d.at)||(i===0&&d.id==="eve");
+    return `<g class="stn" data-s="${i}"><circle cx="${x(mi)}" cy="${ys(mi)}" r="${on?9:6}" fill="${mi<=end?'var(--gold)':'var(--bg)'}" stroke="var(--deep)" stroke-width="2.5"/>
+    <text x="${x(mi)}" y="${up?ys(mi)-18:ys(mi)+30}" text-anchor="middle">${lab}</text>
+    ${narrow?"":`<text x="${x(mi)}" y="${up?ys(mi)-36:ys(mi)+48}" text-anchor="middle" style="font-weight:400;fill:var(--soft)">${mi?mi+" mi":"start"}</text>`}</g>`}).join("");
+  mapEl.innerHTML=`<path d="${path}" fill="none" stroke="var(--line)" stroke-width="8" stroke-linecap="round"/>
+  <clipPath id="walked"><rect x="0" y="0" width="${x(end)}" height="${H}"/></clipPath>
+  <path d="${path}" fill="none" stroke="var(--gold)" stroke-width="8" stroke-linecap="round" clip-path="url(#walked)"/>
+  ${d.at>0&&d.id!=="after"?`<clipPath id="today"><rect x="${x(start)}" y="0" width="${x(end)-x(start)}" height="${H}"/></clipPath><path d="${path}" fill="none" stroke="var(--deep)" stroke-width="4" stroke-dasharray="2 7" stroke-linecap="round" clip-path="url(#today)"/>`:""}
+  ${st}`;
+};
+const mapRO=new ResizeObserver(draw);mapRO.observe(mapEl);
+const topEl=$("top");const setStick=()=>{const st=getComputedStyle(topEl).position==="sticky";document.documentElement.style.setProperty("--stick",st?topEl.offsetHeight+"px":"0px")};const topRO=new ResizeObserver(setStick);topRO.observe(topEl);
+mapEl.addEventListener("click",e=>{const g=e.target.closest(".stn");if(!g)return;const s=+g.dataset.s;go(s===0?0:days.findIndex(d=>d.at===s&&d.id!=="eve"));toDay()});
+
+function showPic(i){
+  const d=days[cur];pic=i;const [f,c]=d.photos[i];
+  $("big").src=`${f}.jpg`;$("big").alt=c;$("cap").textContent=c;
+  [...$("thumbs").children].forEach((b,j)=>b.setAttribute("aria-current",j===i));
+}
+function go(i,push=true){
+  if(i<0||i>=days.length)return;cur=i;const d=days[i];
+  [...$("daybtns").children].forEach((b,j)=>b.setAttribute("aria-pressed",j===i));
+  $("tag").textContent=d.tag;$("when").textContent=d.when;
+  $("where").innerHTML=d.where+(d.miles?` · <span class="miles">${d.miles}</span>`:"");
+  const walked=d.id==="after"?94.3:(d.at?stations[d.at][1]:0);
+  $("meter").innerHTML=`${walked.toFixed(1)} of 94.3 miles walked<div class="bar"><i style="width:${walked/94.3*100}%"></i></div>`;
+  $("text").innerHTML=d.text.map(t=>`<p>${t}</p>`).join("");
+  $("q").textContent=d.q;$("note").value=store.get("wt-note-"+d.id);
+  $("thumbs").innerHTML=d.photos.map(([f,c],j)=>`<button data-j="${j}" aria-label="${c.replace(/"/g,'&quot;')}"><img src="${f}.jpg" alt=""></button>`).join("");
+  showPic(0);
+  $("prev").disabled=i===0;$("next").disabled=i===days.length-1;
+  draw();
+  if(push&&location.hash!=="#"+d.id)history.replaceState(null,"","#"+d.id);
+  store.set("wt-day",d.id);
+}
+$("thumbs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)showPic(+b.dataset.j)});
+$("prev").addEventListener("click",()=>{go(cur-1);toDay()});
+$("next").addEventListener("click",()=>{go(cur+1);toDay()});
+$("note").addEventListener("input",e=>store.set("wt-note-"+days[cur].id,e.target.value));
+const lb=$("lb");
+$("big").addEventListener("click",()=>{$("lbimg").src=$("big").src;$("lbimg").alt=$("big").alt;$("lbcap").textContent=$("cap").textContent;lb.classList.add("on");$("lbx").focus()});
+const closeLb=()=>lb.classList.remove("on");
+$("lbx").addEventListener("click",closeLb);lb.addEventListener("click",e=>{if(e.target===lb)closeLb()});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape")closeLb();
+  if(e.target.tagName==="TEXTAREA")return;
+  const n=days[cur].photos.length;
+  if(e.key==="ArrowRight")showPic((pic+1)%n);
+  if(e.key==="ArrowLeft")showPic((pic-1+n)%n);
+});
+const fromHash=()=>{const h=location.hash.slice(1);const i=days.findIndex(d=>d.id===h);return i};
+window.addEventListener("hashchange",()=>{const i=fromHash();if(i>=0&&i!==cur)go(i,false)});
+let start=fromHash();if(start<0){const s=days.findIndex(d=>d.id===store.get("wt-day"));start=s>=0?s:0}
+go(start,false);
+}
+</script>
+</body>
+</html>
